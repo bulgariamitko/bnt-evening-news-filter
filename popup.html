@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font: 14px system-ui, sans-serif; width: 240px; padding: 12px; margin: 0; }
+    h1 { font-size: 15px; margin: 0 0 12px; }
+    label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    select { padding: 2px 4px; }
+    a { color: #c00; }
+  </style>
+</head>
+<body>
+  <h1>📺 BNT вечерни новини</h1>
+  <label><input type="checkbox" id="enabled"> Показвай само новините</label>
+  <label>Час:
+    <select id="hour">
+      <option>06</option><option>07</option><option>08</option><option>09</option>
+      <option>12</option><option>16</option><option>17</option><option>18</option>
+      <option>20</option><option>23</option>
+    </select>
+  </label>
+  <a href="https://www.youtube.com/@BNT1/videos" target="_blank">Отвори канала на БНТ</a>
+  <script src="popup.js"></script>
+</body>
+</html>
