@@ -8,7 +8,7 @@ Upload `dist/bulgarian-evening-news-<version>.zip` (run `./build.sh` to create i
 **Name** (from manifest): Bulgarian Evening News (BNT, NOVA, Euronews)
 
 **Summary** (max 132 chars, from manifest description):
-Show only the evening news on the BNT, NOVA and Euronews Bulgaria YouTube channels, jump to the next day, and resume where you left off.
+Only the evening news on the BNT, NOVA and Euronews Bulgaria YouTube channels. Jump to the next day and resume where you left off.
 
 **Category:** News & Weather
 **Language:** Bulgarian (add English as a second language if offered)
