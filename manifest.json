@@ -1,17 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "BNT Evening News Filter",
-  "version": "1.2.0",
-  "description": "On the BNT1 YouTube channel, show only the 20:00 evening news (По света и у нас) and hide everything else.",
-  "permissions": ["storage"],
+  "name": "Bulgarian Evening News (BNT, NOVA, Euronews)",
+  "version": "2.0.0",
+  "description": "Show only the evening news on the BNT, NOVA and Euronews Bulgaria YouTube channels, jump to the next day, and resume where you left off.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
-    "default_title": "BNT Evening News Filter",
-    "default_popup": "popup.html"
+    "default_title": "Bulgarian Evening News",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"],
+      "js": ["channels.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }
