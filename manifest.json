@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bulgarian Evening News (BNT, NOVA, Euronews)",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Show only the evening news on the BNT, NOVA and Euronews Bulgaria YouTube channels, jump to the next day, and resume where you left off.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["https://www.youtube.com/*"],

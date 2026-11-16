@@ -18,6 +18,8 @@
   }
 }
 
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
   font: 13px system-ui, -apple-system, Roboto, sans-serif;
   width: 360px;
