@@ -53,6 +53,13 @@
       handle: "BNT1",
       show: "По света и у нас",
       time: (s) => `${pad(s.hour)}:00`,
+      // Any edition of the show (07:00, 12:00, 18:00, 20:00 ...).
+      isShow: (t) => /по света и у нас/i.test(t) && !/регионални/i.test(t),
+      // Broadcast hour from "..., 20:00 по БНТ" / "..., 7.00 ч." (after the date).
+      hourOf: (t) => {
+        const m = t.match(/\d{1,2}\.\d{1,2}\.\d{2,4}\D+?(\d{1,2})[.:,]00(\D|$)/);
+        return m ? +m[1] : null;
+      },
       isNews: (t, s) =>
         /по света и у нас/i.test(t) &&
         !/регионални/i.test(t) &&
@@ -79,6 +86,8 @@
       query: (d) => `Централна емисия новини ${fmt(d)}`,
     },
   ];
+
+  for (const c of CHANNELS) if (!c.isShow) c.isShow = c.isNews;
 
   const byId = (id) => CHANNELS.find((c) => c.id === id);
 
@@ -116,11 +125,23 @@
       const html = await (await fetch(url, { credentials: "include" })).text();
       const m = html.match(/var ytInitialData = (\{.*?\});<\/script>/s);
       if (m) {
-        const hit = collectVideos(JSON.parse(m[1])).find((v) => {
+        const sameDate = collectVideos(JSON.parse(m[1])).filter((v) => {
           const d = parseDate(v.title);
-          return d && sameDay(d, date) && ch.isNews(v.title, settings);
+          return d && sameDay(d, date) && ch.isShow(v.title, settings);
         });
-        if (hit) result = { ...hit, date };
+        const hit = sameDate.find((v) => ch.isNews(v.title, settings));
+        if (hit) {
+          result = { ...hit, date };
+        } else if (ch.hourOf && sameDate.length) {
+          // The chosen edition is missing that day (e.g. election night special):
+          // take the edition closest in time, preferring the later one on a tie.
+          const want = +settings.hour;
+          const best = sameDate
+            .map((v) => ({ ...v, hour: ch.hourOf(v.title) }))
+            .filter((v) => v.hour != null)
+            .sort((a, b) => Math.abs(a.hour - want) - Math.abs(b.hour - want) || b.hour - a.hour)[0];
+          if (best) result = { id: best.id, title: best.title, date, fallback: true };
+        }
       }
     } catch (e) {
       console.warn("[BG News] search failed", e);
@@ -131,7 +152,7 @@
   }
 
   // Nearest episode up to `maxDays` days away (step = +1 next, -1 previous).
-  async function findNearby(ch, date, step, settings, maxDays = 4) {
+  async function findNearby(ch, date, step, settings, maxDays = 7) {
     const today = new Date();
     for (let i = 1; i <= maxDays; i++) {
       const d = addDays(date, step * i);

@@ -43,7 +43,7 @@
 
   if (tab?.url?.includes("youtube.com/watch")) {
     const title = (tab.title || "").replace(/^\(\d+\)\s*/, "").replace(/\s*-\s*YouTube$/, "");
-    const current = N.CHANNELS.find((c) => c.isNews(title, settings));
+    const current = N.CHANNELS.find((c) => c.isShow(title, settings));
     const date = current && N.parseDate(title);
     if (current && date) {
       $("same-date").hidden = false;

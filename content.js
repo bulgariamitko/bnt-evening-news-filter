@@ -70,7 +70,7 @@
     const text = el("div");
     text.append(
       el("div", "bnt-nav-label", label),
-      el("div", "bnt-nav-date", `📅 ${N.fmtLong(ep.date)}`),
+      el("div", "bnt-nav-date", `📅 ${N.fmtLong(ep.date)}${ep.fallback ? " · друга емисия" : ""}`),
       el("div", "bnt-nav-title", ep.title)
     );
     a.append(img, text);
@@ -109,7 +109,7 @@
 
     const ch = N.channelFromPath(ownerHref);
     const date = N.parseDate(title);
-    if (!ch || !date || !ch.isNews(title, settings)) return;
+    if (!ch || !date || !ch.isShow(title, settings)) return;
 
     currentNews = { ch, id: videoId, title, date };
     rememberWatched(0);
