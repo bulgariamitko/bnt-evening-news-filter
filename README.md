@@ -6,6 +6,8 @@ Chrome extension that makes it easy to follow the Bulgarian TV **evening news** 
 
 *Разширение за Chrome за лесно гледане на вечерните новини на БНТ, NOVA и Euronews България в YouTube.*
 
+**[Install from the Chrome Web Store / Инсталирайте от Chrome Web Store](https://chromewebstore.google.com/detail/mchbfjfficdnbhhhjgmcnfnphcehcoip)**
+
 | Channel | Show | Time |
 |---|---|---|
 | [БНТ](https://www.youtube.com/@BNT1/videos) | По света и у нас | 20:00 (configurable) |
@@ -24,14 +26,18 @@ bTV is not included because bTV doesn't publish its full news broadcasts on YouT
 
 ## Install
 
-**Chrome Web Store:** coming soon.
+**Chrome Web Store (recommended):** [Bulgarian Evening News](https://chromewebstore.google.com/detail/mchbfjfficdnbhhhjgmcnfnphcehcoip). Updates install automatically.
 
-**Manually:**
+**Manually** (for development):
 1. Download this repository (**Code → Download ZIP**) and unzip it.
 2. Open `chrome://extensions` and enable **Developer mode** (top right).
 3. Click **Load unpacked** and select the folder.
 
 ## Инсталиране
+
+**От Chrome Web Store (препоръчително):** [Bulgarian Evening News](https://chromewebstore.google.com/detail/mchbfjfficdnbhhhjgmcnfnphcehcoip), с автоматични обновявания.
+
+**Ръчно:**
 
 1. Изтеглете хранилището (**Code → Download ZIP**) и го разархивирайте.
 2. Отворете `chrome://extensions` и включете **Developer mode** (горе вдясно).
