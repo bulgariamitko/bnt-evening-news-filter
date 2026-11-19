@@ -19,6 +19,31 @@
 
   const settings = { ...N.DEFAULT_SETTINGS, ...(await chrome.storage.sync.get(N.DEFAULT_SETTINGS)) };
   const { lastWatched = {} } = await chrome.storage.local.get({ lastWatched: {} });
+
+  // Older versions could save another video's ID next to a news title.
+  // Check each saved entry and repair it from the channel's search if needed.
+  async function realTitle(id) {
+    try {
+      const r = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}`);
+      return r.ok ? (await r.json()).title : null;
+    } catch {
+      return null;
+    }
+  }
+  let repaired = false;
+  await Promise.all(
+    N.CHANNELS.map(async (ch) => {
+      const last = lastWatched[ch.id];
+      if (!last) return;
+      const t = await realTitle(last.id);
+      if (t === null || t === last.title) return;
+      const ep = await N.findEpisode(ch, N.fromKey(last.date), settings);
+      if (ep) lastWatched[ch.id] = { ...last, id: ep.id, title: ep.title, time: 0, duration: 0 };
+      else delete lastWatched[ch.id];
+      repaired = true;
+    })
+  );
+  if (repaired) chrome.storage.local.set({ lastWatched });
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
   // Open in the current tab if it's YouTube, otherwise in a new tab.

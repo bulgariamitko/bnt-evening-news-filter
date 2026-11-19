@@ -81,6 +81,21 @@
   let currentCardVideo = null;
   let currentNews = null; // {ch, id, title, date} of the news video being watched
 
+  const infoCache = new Map();
+  function videoInfo(id) {
+    if (!infoCache.has(id)) {
+      const url = `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}`;
+      infoCache.set(
+        id,
+        fetch(url)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => (j ? { title: j.title || "", path: new URL(j.author_url || "", location.origin).pathname } : null))
+          .catch(() => null)
+      );
+    }
+    return infoCache.get(id);
+  }
+
   async function updateWatchCard() {
     const videoId = new URLSearchParams(location.search).get("v");
     const isWatch = location.pathname === "/watch" && videoId;
@@ -94,20 +109,20 @@
     }
     if (currentCardVideo === videoId && (existing || !settings.enabled || !currentNews)) return;
 
-    const titleEl = document.querySelector("ytd-watch-metadata h1");
-    const ownerHref = document.querySelector("ytd-watch-metadata #owner a")?.getAttribute("href") || "";
-    const related = document.querySelector("#secondary #related");
-    if (!titleEl || !related) return; // not rendered yet; retry on next mutation
-
-    const title = titleEl.textContent.trim();
-    // Title/owner may still belong to the previous video right after SPA nav.
-    if (!title || !document.title.includes(title)) return;
+    if (!document.querySelector("#secondary #related")) return; // not rendered yet; retry on next mutation
 
     existing?.remove();
     currentCardVideo = videoId;
     currentNews = null;
 
-    const ch = N.channelFromPath(ownerHref);
+    // Don't trust the page's title/owner: right after in-app navigation they can
+    // still belong to the previous video. Ask YouTube about this exact video ID.
+    const info = await videoInfo(videoId);
+    if (currentCardVideo !== videoId || new URLSearchParams(location.search).get("v") !== videoId) return;
+    if (!info) return;
+
+    const title = info.title;
+    const ch = N.channelFromPath(info.path);
     const date = N.parseDate(title);
     if (!ch || !date || !ch.isShow(title, settings)) return;
 
@@ -119,7 +134,12 @@
     const card = el("div");
     card.id = "bnt-nav-card";
     card.append(el("div", "bnt-nav-empty", "Търся следващите новини…"));
-    related.prepend(card);
+    const relatedNow = document.querySelector("#secondary #related");
+    if (!relatedNow) {
+      currentCardVideo = null; // try again once the sidebar is back
+      return;
+    }
+    relatedNow.prepend(card);
 
     const [next, prev] = await Promise.all([
       N.findNearby(ch, date, 1, settings),
